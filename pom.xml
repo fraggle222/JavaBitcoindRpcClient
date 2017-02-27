@@ -52,11 +52,6 @@
       <url>git@github.com:Polve/JavaBitcoindRpcClient.git</url>
     </scm>
   -->
-  <scm>
-    <connection>scm:git:https://github.com/Polve/JavaBitcoindRpcClient</connection>
-    <developerConnection>scm:git:https://github.com/Polve/JavaBitcoindRpcClient.git</developerConnection>
-    <url>scm:git:https://github.com/Polve/JavaBitcoindRpcClient</url>
-  </scm>
 
   <distributionManagement>
 

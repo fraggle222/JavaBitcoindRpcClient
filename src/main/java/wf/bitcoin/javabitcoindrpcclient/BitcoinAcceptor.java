@@ -53,7 +53,7 @@ public class BitcoinAcceptor implements Runnable {
         listeners.add(listener);
     }
 
-    public String getAccountAddress(String account) throws BitcoinRpcException {
+    public String getAccountAddress(String account) throws BitcoinRpcBaseException {
         List<String> a = bitcoin.getAddressesByAccount(account);
         if (a.isEmpty())
             return bitcoin.getNewAddress(account);
@@ -64,7 +64,7 @@ public class BitcoinAcceptor implements Runnable {
         return lastBlock;
     }
 
-    public synchronized void setLastBlock(String lastBlock) throws BitcoinRpcException {
+    public synchronized void setLastBlock(String lastBlock) throws BitcoinRpcBaseException {
         if (this.lastBlock != null)
             throw new IllegalStateException("lastBlock already set");
         this.lastBlock = lastBlock;
@@ -85,7 +85,7 @@ public class BitcoinAcceptor implements Runnable {
 
     private HashSet<String> seen = new HashSet<String>();
 
-    private void updateMonitorBlock() throws BitcoinRpcException {
+    private void updateMonitorBlock() throws BitcoinRpcBaseException {
         monitorBlock = lastBlock;
         for(int i = 0; i < monitorDepth && monitorBlock != null; i++) {
             BitcoindRpcClient.Block b = bitcoin.getBlock(monitorBlock);
@@ -93,7 +93,7 @@ public class BitcoinAcceptor implements Runnable {
         }
     }
 
-    public synchronized void checkPayments() throws BitcoinRpcException {
+    public synchronized void checkPayments() throws BitcoinRpcBaseException {
         BitcoindRpcClient.TransactionsSinceBlock t = monitorBlock == null ? bitcoin.listSinceBlock() : bitcoin.listSinceBlock(monitorBlock);
         for (BitcoindRpcClient.Transaction transaction : t.transactions()) {
             if ("receive".equals(transaction.category())) {
@@ -157,7 +157,7 @@ public class BitcoinAcceptor implements Runnable {
                 try {
                     nextCheck = System.currentTimeMillis() + checkInterval;
                     checkPayments();
-                } catch (BitcoinRpcException ex) {
+                } catch (BitcoinRpcBaseException ex) {
                     Logger.getLogger(BitcoinAcceptor.class.getName()).log(Level.SEVERE, null, ex);
                 }
             else
@@ -177,7 +177,7 @@ public class BitcoinAcceptor implements Runnable {
 //            public void block(String blockHash) {
 //                try {
 //                    System.out.println("new block: " + blockHash + "; date: " + bitcoin.getBlock(blockHash).time());
-//                } catch (BitcoinRpcException ex) {
+//                } catch (BitcoinRpcBaseException ex) {
 //                    logger.log(Level.SEVERE, null, ex);
 //                }
 //            }
