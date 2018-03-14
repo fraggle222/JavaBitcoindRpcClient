@@ -883,6 +883,10 @@ public class BitcoinJSONRPCClient implements BitcoindRpcClient {
   public Block getBlock(String blockHash) throws BitcoinRpcBaseException {
     return new BlockMapWrapper((Map) query("getblock", blockHash));
   }
+  
+  public Block getBlockHeader(String blockHash) throws BitcoinRpcBaseException {
+	  return new BlockMapWrapper((Map) query("getblockheader", blockHash));
+  }
 
   @Override
   public String getBlockHash(int height) throws BitcoinRpcBaseException {
@@ -1697,6 +1701,18 @@ public class BitcoinJSONRPCClient implements BitcoindRpcClient {
     else
       throw new BitcoinRpcBaseException("Incomplete");
   }
+  
+  public String fundRawTransaction(String hex) throws BitcoinRpcBaseException{
+	  Map result = (Map) query("fundrawtransaction",hex);
+	  return (String)result.get("hex");
+  }
+  
+  public String fundRawTransaction(String hex, double feerate) throws BitcoinRpcBaseException { 
+	  LinkedHashMap options=new LinkedHashMap();
+	  options.put("feeRate", feerate);
+	  Map result = (Map)query("fundrawtransaction",hex, options);
+	  return (String)result.get("hex");
+  }
 
   public RawTransaction decodeRawTransaction(String hex) throws BitcoinRpcBaseException {
     Map result = (Map) query("decoderawtransaction", hex);
@@ -1798,6 +1814,26 @@ public class BitcoinJSONRPCClient implements BitcoindRpcClient {
   public double getEstimateFee(int nBlocks) throws BitcoinRpcBaseException {
     return ((Number) query("estimatefee", nBlocks)).doubleValue();
   }
+  
+  @Override
+  public EstimateFeeResult getEstimateSmartFee(int nBlocks) throws BitcoinRpcBaseException {
+	    final MapWrapper wrapper=new MapWrapper((Map)query("estimatesmartfee", nBlocks));
+	    return new EstimateFeeResult() {
+
+			@Override
+			public int getBlocks() {
+				// TODO Auto-generated method stub
+				return wrapper.mapInt("blocks");
+			}
+
+			@Override
+			public double getFeeRate() {
+				// TODO Auto-generated method stub
+				return wrapper.mapDouble("feerate");
+			}
+	    	
+	    };
+	  }
 
   @Override
   public double getEstimatePriority(int nBlocks) throws BitcoinRpcBaseException {
